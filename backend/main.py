@@ -1,3 +1,5 @@
+from pydantic import BaseModel
+from typing import Optional
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from database import get_db_connection
@@ -36,3 +38,42 @@ def get_transactions():
     cursor.close()
     conn.close()
     return transactions
+    from pydantic import BaseModel
+from typing import Optional
+
+class TransactionCreate(BaseModel):
+    account_id: int
+    category_id: int
+    amount: float
+    transaction_type: str
+    description: Optional[str] = None
+
+@app.post("/api/transactions")
+def create_transaction(transaction: TransactionCreate):
+    conn = get_db_connection()
+    if not conn:
+        return {"error": "Baza xətası"}
+    
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""
+            INSERT INTO transactions (account_id, category_id, amount, transaction_type, description)
+            VALUES (%s, %s, %s, %s, %s)
+            RETURNING transaction_id;
+        """, (
+            transaction.account_id,
+            transaction.category_id,
+            transaction.amount,
+            transaction.transaction_type,
+            transaction.description
+        ))
+        new_id = cursor.fetchone()['transaction_id']
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return {"message": "Uğurla əlavə olundu", "transaction_id": new_id}
+    except Exception as e:
+        conn.rollback()
+        cursor.close()
+        conn.close()
+        return {"error": str(e)}

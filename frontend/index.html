@@ -308,6 +308,54 @@
             }
         });
     });
+    // Saytdakı formaya basanda məlumatı bazaya göndərən funksiya
+async function handleAddTransaction(event) {
+    event.preventDefault(); // Sayfanın yenilənməsinin qarşısını alır
+
+    const amountInput = document.querySelector('input[type="number"]') || document.querySelector('input[placeholder="0.00"]');
+    const descInput = document.querySelector('input[placeholder*="Bravo"]') || document.querySelector('input[type="text"]');
+
+    const payload = {
+        account_id: 1,      // Əsas hesabimiz
+        category_id: 1,     // Kateqoriya
+        amount: parseFloat(amountInput ? amountInput.value : 0),
+        transaction_type: 'Expense',
+        description: descInput ? descInput.value : 'Xərc'
+    };
+
+    if (!payload.amount || payload.amount <= 0) {
+        alert("Lütfən məbləğ daxil edin!");
+        return;
+    }
+
+    try {
+        const response = await fetch('http://127.0.0.1:8000/api/transactions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+        if (result.message) {
+            alert("Yeni əməliyyat PostgreSQL bazasına uğurla yazıldı!");
+            if (amountInput) amountInput.value = '';
+            if (descInput) descInput.value = '';
+            loadTransactions(); // Cədvəli yeniləyir
+        } else {
+            alert("Xəta baş verdi: " + result.error);
+        }
+    } catch (error) {
+        console.error("Əlavə etmə xətası:", error);
+    }
+}
+
+// Formaya basılma hadisəsini dinləyirik
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    if (form) {
+        form.addEventListener('submit', handleAddTransaction);
+    }
+});
 </script>
 </body>
 </html>
