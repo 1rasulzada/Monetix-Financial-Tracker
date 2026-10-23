@@ -256,39 +256,58 @@
 
     <!-- Script to Initialize Chart.js -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const ctx = document.getElementById('expenseChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Qida və Market', 'Kommunal', 'Nəqliyyat'],
-                    datasets: [{
-                        data: [45.20, 65.00, 12.00],
-                        backgroundColor: [
-                            '#6366f1', // Indigo
-                            '#f43f5e', // Rose
-                            '#06b6d4'  // Cyan
-                        ],
-                        borderWidth: 2,
-                        borderColor: '#ffffff'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                font: { family: 'Inter', size: 12 },
-                                padding: 16
-                            }
-                        }
-                    },
-                    cutout: '70%'
-                }
-            });
+    // Backend API'den verileri çeken fonksiyon
+    async function loadTransactions() {
+        try {
+            const response = await fetch('http://127.0.0.1:8000/api/transactions');
+            const data = await response.json();
+            
+            console.log("Veritabanından gelen veriler:", data);
+
+            const tableBody = document.querySelector('tbody');
+            if (tableBody && data.length > 0) {
+                tableBody.innerHTML = ''; // Eski statik verileri temizliyoruz
+                
+                data.forEach(item => {
+                    const isIncome = item.transaction_type === 'Income';
+                    const row = `
+                        <tr class="border-b hover:bg-gray-50">
+                            <td class="p-3">${item.transaction_date.split('T')[0]}</td>
+                            <td class="p-3">${item.account_name}</td>
+                            <td class="p-3">${item.category_name}</td>
+                            <td class="p-3">${item.description || '-'}</td>
+                            <td class="p-3 font-semibold ${isIncome ? 'text-green-600' : 'text-red-600'}">
+                                ${isIncome ? '+' : '-'}${item.amount} AZN
+                            </td>
+                        </tr>
+                    `;
+                    tableBody.innerHTML += row;
+                });
+            }
+        } catch (error) {
+            console.error("API bağlantı hatası:", error);
+        }
+    }
+
+    // Sayfa yüklendiğinde hem Chart'ı hem de verileri yüklüyoruz
+    document.addEventListener('DOMContentLoaded', function() {
+        loadTransactions();
+
+        // Chart.js Tanımlaması
+        const ctx = document.getElementById('expenseChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Qida və Market', 'Kommunal', 'Nəqliyyat'],
+                datasets: [{
+                    data: [45.20, 65.00, 12.00],
+                    backgroundColor: ['#6366f1', '#f43f5e', '#06b6d4'],
+                    borderWidth: 2,
+                    borderColor: '#ffffff'
+                }]
+            }
         });
-    </script>
+    });
+</script>
 </body>
 </html>
