@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monetix - Personal Finance Tracker</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col">
+
+    <!-- Header Navigation -->
+    <header class="bg-slate-900 text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="bg-indigo-600 p-2 rounded-lg text-white">
+                    <i class="fa-solid fa-wallet text-xl"></i>
+                </div>
+                <span class="font-bold text-xl tracking-tight text-white">Monetix</span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-3 bg-slate-800 py-1.5 px-3 rounded-full border border-slate-700">
+                    <div class="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center text-white font-semibold text-sm">
+                        NR
+                    </div>
+                    <span class="text-sm font-medium text-slate-200 hidden sm:inline">Nurlan Rasulzade</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full space-y-8">
+        
+        <!-- Top Banner / Summary Cards -->
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Total Balance Card -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Balance</p>
+                    <h2 class="text-3xl font-bold text-slate-900 mt-2">1,835.50 <span class="text-lg font-medium text-slate-500">AZN</span></h2>
+                    <p class="text-xs text-emerald-600 font-medium mt-1 flex items-center">
+                        <i class="fa-solid fa-arrow-trend-up mr-1"></i> +8.2% from last month
+                    </p>
+                </div>
+                <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-scale-balanced"></i>
+                </div>
+            </div>
+
+            <!-- Monthly Income Card -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Monthly Income</p>
+                    <h2 class="text-3xl font-bold text-emerald-600 mt-2">1,500.00 <span class="text-lg font-medium text-slate-500">AZN</span></h2>
+                    <p class="text-xs text-slate-400 mt-1">Salary & Direct Deposits</p>
+                </div>
+                <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-arrow-down-left"></i>
+                </div>
+            </div>
+
+            <!-- Monthly Expenses Card -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Monthly Expenses</p>
+                    <h2 class="text-3xl font-bold text-rose-600 mt-2">122.20 <span class="text-lg font-medium text-slate-500">AZN</span></h2>
+                    <p class="text-xs text-slate-400 mt-1">4 Recorded Transactions</p>
+                </div>
+                <div class="w-12 h-12 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-arrow-up-right"></i>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive Core Layout: Form & Chart -->
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- Add Transaction Form (5 Cols) -->
+            <div class="lg:col-span-5 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <h3 class="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-circle-plus text-indigo-600"></i> New Transaction
+                </h3>
+                
+                <form id="transactionForm" class="space-y-4">
+                    <!-- Type Selection -->
+                    <div>
+                        <label class="block text-xs font-medium text-slate-600 mb-1">Transaction Type</label>
+                        <div class="grid grid-cols-2 gap-3">
+                            <label class="flex items-center justify-center p-2.5 border rounded-xl cursor-pointer text-sm font-medium hover:bg-slate-50 border-emerald-300 bg-emerald-50 text-emerald-700">
+                                <input type="radio" name="type" value="Income" class="hidden" checked>
+                                <i class="fa-solid fa-arrow-down mr-2"></i> Income
+                            </label>
+                            <label class="flex items-center justify-center p-2.5 border rounded-xl cursor-pointer text-sm font-medium hover:bg-slate-50 border-slate-200 text-slate-600">
+                                <input type="radio" name="type" value="Expense" class="hidden">
+                                <i class="fa-solid fa-arrow-up mr-2"></i> Expense
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Account Select -->
+                    <div>
+                        <label for="account" class="block text-xs font-medium text-slate-600 mb-1">Account</label>
+                        <select id="account" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <option value="1">Kapital Bank Cashback</option>
+                            <option value="2">Nağd Pul (Cib)</option>
+                            <option value="3">Qənaət Hesabı</option>
+                        </select>
+                    </div>
+
+                    <!-- Category Select -->
+                    <div>
+                        <label for="category" class="block text-xs font-medium text-slate-600 mb-1">Category</label>
+                        <select id="category" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <option value="1">Maaş və Gəlir</option>
+                            <option value="2">Qida və Market</option>
+                            <option value="3">Nəqliyyat</option>
+                            <option value="4">Kommunal və Xidmətlər</option>
+                            <option value="5">Əyləncə</option>
+                        </select>
+                    </div>
+
+                    <!-- Amount -->
+                    <div>
+                        <label for="amount" class="block text-xs font-medium text-slate-600 mb-1">Amount (AZN)</label>
+                        <input type="number" id="amount" step="0.01" placeholder="0.00" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+
+                    <!-- Description -->
+                    <div>
+                        <label for="description" class="block text-xs font-medium text-slate-600 mb-1">Description</label>
+                        <input type="text" id="description" placeholder="e.g. Bravo Supermarket" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow-md transition-colors duration-200 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-check"></i> Record Transaction
+                    </button>
+                </form>
+            </div>
+
+            <!-- Expenses Breakdown Chart (7 Cols) -->
+            <div class="lg:col-span-7 bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
+                <div>
+                    <h3 class="text-lg font-bold text-slate-900 mb-1 flex items-center gap-2">
+                        <i class="fa-solid fa-chart-pie text-indigo-600"></i> Expense Breakdown
+                    </h3>
+                    <p class="text-xs text-slate-400 mb-6">Distribution of expenses by categories (AZN)</p>
+                </div>
+                
+                <div class="relative w-full max-w-xs mx-auto h-64 flex items-center justify-center">
+                    <canvas id="expenseChart"></canvas>
+                </div>
+
+                <div class="grid grid-cols-3 gap-2 text-center mt-6 pt-4 border-t border-slate-100">
+                    <div>
+                        <span class="block text-xs text-slate-400">Groceries</span>
+                        <span class="text-sm font-semibold text-slate-800">45.20 AZN</span>
+                    </div>
+                    <div>
+                        <span class="block text-xs text-slate-400">Utilities</span>
+                        <span class="text-sm font-semibold text-slate-800">65.00 AZN</span>
+                    </div>
+                    <div>
+                        <span class="block text-xs text-slate-400">Transport</span>
+                        <span class="text-sm font-semibold text-slate-800">12.00 AZN</span>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- Recent Transactions Table -->
+        <section class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-list-check text-indigo-600"></i> Recent Transactions
+                    </h3>
+                    <p class="text-xs text-slate-400">Live records from PostgreSQL database</p>
+                </div>
+                <button class="text-xs font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1">
+                    View All <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b border-slate-200 text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                            <th class="pb-3">Account</th>
+                            <th class="pb-3">Category</th>
+                            <th class="pb-3">Description</th>
+                            <th class="pb-3">Type</th>
+                            <th class="pb-3 text-right">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 text-sm font-medium">
+                        <tr class="hover:bg-slate-50 transition-colors">
+                            <td class="py-3.5 text-slate-800">Kapital Bank Cashback</td>
+                            <td class="py-3.5 text-slate-500">Kommunal və Xidmətlər</td>
+                            <td class="py-3.5 text-slate-600">İnternet və kommunal ödəniş</td>
+                            <td class="py-3.5">
+                                <span class="px-2.5 py-1 text-xs font-semibold bg-rose-50 text-rose-600 rounded-full border border-rose-200">Expense</span>
+                            </td>
+                            <td class="py-3.5 text-right font-bold text-rose-600">-65.00 AZN</td>
+                        </tr>
+                        <tr class="hover:bg-slate-50 transition-colors">
+                            <td class="py-3.5 text-slate-800">Nağd Pul (Cib)</td>
+                            <td class="py-3.5 text-slate-500">Nəqliyyat</td>
+                            <td class="py-3.5 text-slate-600">Taksi və metro xərci</td>
+                            <td class="py-3.5">
+                                <span class="px-2.5 py-1 text-xs font-semibold bg-rose-50 text-rose-600 rounded-full border border-rose-200">Expense</span>
+                            </td>
+                            <td class="py-3.5 text-right font-bold text-rose-600">-12.00 AZN</td>
+                        </tr>
+                        <tr class="hover:bg-slate-50 transition-colors">
+                            <td class="py-3.5 text-slate-800">Kapital Bank Cashback</td>
+                            <td class="py-3.5 text-slate-500">Qida və Market</td>
+                            <td class="py-3.5 text-slate-600">Bravo Supermarket alış-verişi</td>
+                            <td class="py-3.5">
+                                <span class="px-2.5 py-1 text-xs font-semibold bg-rose-50 text-rose-600 rounded-full border border-rose-200">Expense</span>
+                            </td>
+                            <td class="py-3.5 text-right font-bold text-rose-600">-45.20 AZN</td>
+                        </tr>
+                        <tr class="hover:bg-slate-50 transition-colors">
+                            <td class="py-3.5 text-slate-800">Kapital Bank Cashback</td>
+                            <td class="py-3.5 text-slate-500">Maaş və Gəlir</td>
+                            <td class="py-3.5 text-slate-600">Aylıq məvacib daxilolması</td>
+                            <td class="py-3.5">
+                                <span class="px-2.5 py-1 text-xs font-semibold bg-emerald-50 text-emerald-600 rounded-full border border-emerald-200">Income</span>
+                            </td>
+                            <td class="py-3.5 text-right font-bold text-emerald-600">+1,500.00 AZN</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-400">
+        <p>Monetix &copy; 2026 - Personal Finance Management System | Capstone Project</p>
+    </footer>
+
+    <!-- Script to Initialize Chart.js -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctx = document.getElementById('expenseChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Qida və Market', 'Kommunal', 'Nəqliyyat'],
+                    datasets: [{
+                        data: [45.20, 65.00, 12.00],
+                        backgroundColor: [
+                            '#6366f1', // Indigo
+                            '#f43f5e', // Rose
+                            '#06b6d4'  // Cyan
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                font: { family: 'Inter', size: 12 },
+                                padding: 16
+                            }
+                        }
+                    },
+                    cutout: '70%'
+                }
+            });
+        });
+    </script>
+</body>
+</html>
